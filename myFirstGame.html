@@ -1,0 +1,93 @@
+<html>
+    <h1>My first game</h1>
+    <canvas id="gameCanvas" width="600" height="500"></canvas>
+    <script>
+        //info abt dimensions
+        var canvas ;
+        //info abt underlying graphical info(rect)
+        var canvasContext;
+        var ballX=50;
+        //for 2D motion and bounce
+        var ballY=50;
+        var speedX=10;
+        var speedY=5;
+        var paddle1=210;
+        var paddle2=210;
+        const paddle_thickness = 10;
+        const paddle_height = 100;
+        var player_1=0;
+        var player_2=0;
+
+        function mousePosition(e){
+            var rect=canvas.getBoundingClientRect();
+            var root=document.documentElement;
+            var mouseX = e.clientX - rect.left - root.scrollLeft;
+            var mouseY = e.clientY - rect.top - root.scrollTop;
+            return{
+                x : mouseX,
+                y : mouseY 
+            };
+        }
+        canvas = document.getElementById('gameCanvas');
+        canvasContext = canvas.getContext('2d');
+        var fps=30;
+        setInterval(function(){
+            move();
+            draw();
+        },1000/fps);
+
+        canvas.addEventListener('mousemove',function(e){
+            var pos = mousePosition(e);
+            paddle1 = pos.y - (paddle_height)/2;
+        })
+    
+    function computerPlay(){
+        var paddle_center = paddle2 + paddle_height/2;
+        if(paddle_center < ballY-35){
+            paddle2 = paddle2 + 6;
+        }
+        if(paddle_center > ballY+35){
+            paddle2 = paddle2 - 6;
+        }
+    }
+
+    function ballReset(){
+        speedX = -speedX;
+        ballX = canvas.width/2;
+        ballY = canvas.height/2;
+    }
+    function move(){
+        computerPlay();
+        ballX = ballX + speedX;
+        ballY = ballY + speedY;
+        if(ballX < 0){
+        ballReset();
+        }
+        if(ballX > canvas.width){
+        speedX = -speedX;
+        }
+        if(ballY < 0){
+        speedY = -speedY;
+        }
+        if(ballY > canvas.width){
+        speedY = -speedY;
+        }
+    } 
+        
+
+    function draw(){
+        canvasContext.fillStyle = 'black';
+        canvasContext.fillRect(0,0,canvas.width,canvas.height);
+        canvasContext.fillStyle = 'white';
+        canvasContext.fillRect(0,paddle1,paddle_thickness,paddle_height);
+        canvasContext.fillStyle = 'white';
+        canvasContext.fillRect(canvas.width-10,paddle2,paddle_thickness,paddle_height);
+        canvasContext.fillStyle = "yellow";
+        //coz there is no fillArc so, begin path to fill
+        canvasContext.beginPath();
+        //arc(x,y for center of circle,10=radius,angles & radians around circle - 2pi -circumference,clkwise/aclkwise-set true: 90 | false: 270)
+        canvasContext.arc(ballX,ballY,10,0,Math.PI*2,true);
+        canvasContext.fill();
+    }
+    </script>
+</html>
